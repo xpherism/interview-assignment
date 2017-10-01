@@ -1,15 +1,45 @@
-# Job interview assignment
-We kindly ask you to solve the task below. By solving and submitting this assignment you provide us with insights in how you solve real-world problems. What we will be looking at is topics such as: choice of technology, structuring of code, use of VCS, selection of 3rd party libraries, documentation etc.
+## Job interview assignment
+The following describes how to run and use the solution for CEGO job interview assignment.
 
-## The task
-Develop a solution that, given a select query, can read data from a database, write it to a local file and then delete the data from the database. The solution should verify that data is written to the file before deleting it from the database.
+### Getting started
+Before cloning the repository make sure the following dependencies are installed.
 
-- Use Bash, PHP, JavaScript or Go as the language
-- Use MySQL, MariaDB, CockroachDB or SQLite as the database
+* PHP 7
+    * php-sqlite3
+* sqlite3
 
-Please use the data set provided in the SQL dump in this repo.
+Clone this repository
 
-## Expectations
-Fork this repo. Solve the task below. Push your code to a public repo and send us the link via email or simply send us a tarball (please include any VCS metadata) in an email to pf@cego.dk.
+```
+git clone https://github.com/xpherism/interview-assignment.git
+```
 
-Your solution should include a short readme describing your solution, how to use/test it and any final considerations such as known errors, next steps, security concerns etc. Don’t worry we are not expecting this thing to be perfect.
+Install the project dependencies via composer
+
+```
+bin/composer install
+```
+
+Run the app and the test command for yourself
+
+```
+php app query <input.sql> <output.csv>
+```
+
+### How it works
+1. A query is read from a sql file and executed on the database.
+
+2. All rows are read to memory and then checked for the availability of the "id" column (which will be needed for deletion later on).
+
+3. Rows are then written to file in CSV format (semi-colon separated) with first row begin column names. File is name <output.csv>~ while processing and renamed to <output.csv> when all data has been written to file. If writing data should fail, a cleanup will be attempted ie. <output.csv>~ will be deleted.
+
+4. When data has been written correctly to disk, relevant rows will then be deleted from the database.
+
+### Notes
+* When verifying data has been written to disk, data loss due to drive failure, power failure etc. as data may still reside in cache (ie. when write-back cache is enabled. This is OS and filesystem dependent).
+
+* There are lots of differents ways to handle deleting the selected data, but requirement of "id" column is the easiest by far. Other alternatives would be to,
+    * Inject *id as __id* into the select query.
+    * *select to delete* statement rewrite (which potentially could be very hard, think order by, group by, joins etc.).
+    * Column/Value matching, but then again, you are free to use substring, uppercase, lowercase, sub selects, column renaming in the select clause, which would break this approach.
+* This has only been tested on Elementary OS (Loki), but should work on platform where php and sqlite3 are available.

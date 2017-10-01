@@ -1,0 +1,26 @@
+{
+    "name": "interview-assignment",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Steffen Nielsen",
+            "email": "sn@orb-x.com"
+        }
+    ],
+    "require": {
+        "symfony/console": "^3.3",
+        "doctrine/dbal": "^2.5"
+    },
+    "autoload": {
+        "psr-4": {
+            "": "src"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": [
+            "rm -f app.db",
+            "cat sqldump.sql | sqlite3 app.db"
+        ]
+    }
+
+}
