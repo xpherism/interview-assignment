@@ -20,7 +20,7 @@ class QueryCommand extends Command
     private function write_data($filename, $data)
     {
         if (count($data) === 0)
-            return;
+            return false;
 
         try {
             // Open output file (existing file will be overridden)
